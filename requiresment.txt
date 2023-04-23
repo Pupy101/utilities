@@ -1,2 +1,5 @@
 httpx
+numpy
+Pillow
+PyYAML
 tqdm

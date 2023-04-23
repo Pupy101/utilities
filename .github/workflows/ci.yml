@@ -37,6 +37,7 @@ jobs:
           pylint --rcfile=pyproject.toml utilities
       - name: Lint with mypy
         run: |
+          python -m pip install types-PyYAML
           mypy --config-file=pyproject.toml utilities
       - name: Test with pytest
         run: |
