@@ -1,16 +1,18 @@
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from functools import partial
-from typing import Callable, List, TypeVar
+from functools import partial, wraps
+from typing import Callable, List, Literal, Optional, TypeVar, overload
 
 from tqdm.auto import tqdm
+from typing_extensions import ParamSpec
 
 from utilities.data import chunking
 
+Args = ParamSpec("Args")
 Input = TypeVar("Input")
 Output = TypeVar("Output")
 
 
-def parallelization_th(
+def run_th(
     func: Callable[[Input], Output],
     items: List[Input],
     n_threads: int,
@@ -20,7 +22,7 @@ def parallelization_th(
         return list(tqdm(pool.map(func, items), total=len(items), disable=tqdm_off))
 
 
-def parallelization_mp(
+def run_mp(
     func: Callable[[Input], Output],
     items: List[Input],
     n_pools: int,
@@ -30,7 +32,7 @@ def parallelization_mp(
         return list(tqdm(pool.map(func, items), total=len(items), disable=tqdm_off))
 
 
-def parallelization_mp_th(  # pylint: disable=too-many-arguments
+def run_mp_th(  # pylint: disable=too-many-arguments
     func: Callable[[Input], Output],
     items: List[Input],
     n_pools: int,
@@ -39,7 +41,7 @@ def parallelization_mp_th(  # pylint: disable=too-many-arguments
     tqdm_off: bool = False,
 ) -> List[Output]:
     func_th: Callable[[Input], List[Output]]
-    func_th = partial(parallelization_th, func=func, n_threads=n_threads, tqdm_off=True)  # type: ignore
+    func_th = partial(run_th, func=func, n_threads=n_threads, tqdm_off=True)  # type: ignore
     total = round(len(items) / chunk_size)
     with ProcessPoolExecutor(max_workers=n_pools) as pool:
         outputs = list(tqdm(pool.map(func_th, chunking(items, chunk_size=chunk_size)), total=total, disable=tqdm_off))
@@ -47,3 +49,31 @@ def parallelization_mp_th(  # pylint: disable=too-many-arguments
     for output in outputs:
         results.extend(output)
     return results
+
+
+@overload
+def retry(count: int, suppress: Literal[True]) -> Callable[[Callable[Args, Output]], Callable[Args, Optional[Output]]]:
+    ...
+
+
+@overload
+def retry(count: int, suppress: Literal[False]) -> Callable[[Callable[Args, Output]], Callable[Args, Output]]:
+    ...
+
+
+def retry(count: int, suppress: bool):
+    def decorator(func: Callable[Args, Output]):
+        @wraps(func)
+        def wrapper(*args: Args.args, **kwargs: Args.kwargs):  # pylint: disable=inconsistent-return-statements
+            for i in range(count + 1):
+                try:
+                    return func(*args, **kwargs)
+                except Exception:  # pylint: disable=broad-exception-caught
+                    if i < count:
+                        continue
+                    if not suppress:
+                        raise
+
+        return wrapper
+
+    return decorator
