@@ -1,5 +1,7 @@
 httpx
 numpy
+pandas
 Pillow
 PyYAML
+scikit-learn
 tqdm

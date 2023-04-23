@@ -2,10 +2,12 @@ import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Generator, Iterable, List, Tuple, TypeVar, Union
+from typing import Any, Generator, Iterable, List, Optional, Tuple, TypeVar, Union
 
+import pandas as pd
 import yaml
 from PIL import Image
+from sklearn.model_selection import train_test_split
 
 Item = TypeVar("Item")
 
@@ -34,17 +36,6 @@ def md5(data: Union[str, bytes]) -> str:
     return hashlib.md5(data).hexdigest()
 
 
-def chunking(items: Iterable[Item], chunk_size: int) -> Generator[List[Item], None, None]:
-    chunk: List[Item] = []
-    for item in items:
-        chunk.append(item)
-        if len(chunk) >= chunk_size:
-            yield chunk
-            chunk = []
-    if chunk:
-        yield chunk
-
-
 @dataclass
 class ResizeImage:
     path: Union[str, Path]
@@ -71,3 +62,41 @@ def resize_image(item: ResizeImage) -> Tuple[Path, bool]:
     resized_image = image.resize(shape, Image.ANTIALIAS)
     resized_image.save(path)
     return path, True
+
+
+def chunking(items: Iterable[Item], chunk_size: int) -> Generator[List[Item], None, None]:
+    chunk: List[Item] = []
+    for item in items:
+        chunk.append(item)
+        if len(chunk) >= chunk_size:
+            yield chunk
+            chunk = []
+    if chunk:
+        yield chunk
+
+
+def train_valid_test_split(
+    data: pd.DataFrame,
+    valid_size: float,
+    test_size: float,
+    random_state: int,
+    stratify_column: Optional[str] = None,
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    assert valid_size + test_size < 1, "Sum of valid/test sizes must be smaller 1"
+    if stratify_column:
+        assert stratify_column in data.columns, f"Column {stratify_column} must be in dataframe"
+    stratify = data[stratify_column] if stratify_column else None
+    train_valid_df, test_df = train_test_split(
+        data,
+        test_size=test_size,
+        random_state=random_state,
+        stratify=stratify,
+    )
+    stratify = train_valid_df[stratify_column] if stratify_column else None
+    train_df, valid_df = train_test_split(
+        train_valid_df,
+        test_size=valid_size / (1 - test_size),
+        random_state=random_state,
+        stratify=stratify,
+    )
+    return train_df, valid_df, test_df
