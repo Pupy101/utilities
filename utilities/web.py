@@ -4,10 +4,13 @@ from pathlib import Path
 from typing import Optional, Tuple, Union
 
 import httpx
+import urllib3
 
 from utilities.config import RETRIES_COUNT
 from utilities.data import md5
 from utilities.execution import retry
+
+urllib3.disable_warnings()
 
 
 def configure_ssl() -> None:
