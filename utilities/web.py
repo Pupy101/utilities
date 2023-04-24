@@ -37,7 +37,7 @@ class DownloadItem:
 @retry(count=RETRIES_COUNT, suppress=True)
 def download_file(item: DownloadItem) -> Tuple[str, Optional[Path]]:
     with httpx.stream("GET", item.url, verify=False, timeout=20) as response:
-        if 200 <= response.status_code < 300:
+        if 200 > response.status_code >= 300:
             return item.url, None
         path = Path(item.dir) / f"{md5(item.url)}.{item.ext}"
         with open(path, "wb") as file:
