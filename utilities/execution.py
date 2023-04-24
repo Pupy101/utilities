@@ -13,8 +13,8 @@ Output = TypeVar("Output")
 
 
 def run_th(
-    func: Callable[[Input], Output],
     items: List[Input],
+    func: Callable[[Input], Output],
     n_threads: int,
     tqdm_off: bool = False,
 ) -> List[Output]:
@@ -23,8 +23,8 @@ def run_th(
 
 
 def run_mp(
-    func: Callable[[Input], Output],
     items: List[Input],
+    func: Callable[[Input], Output],
     n_pools: int,
     tqdm_off: bool = False,
 ) -> List[Output]:
@@ -33,8 +33,8 @@ def run_mp(
 
 
 def run_mp_th(  # pylint: disable=too-many-arguments
-    func: Callable[[Input], Output],
     items: List[Input],
+    func: Callable[[Input], Output],
     n_pools: int,
     chunk_size: int,
     n_threads: int,
