@@ -26,8 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip setuptools
-          python -m pip install -U black isort mypy pylint pytest
-          pip install -e .
+          pip install -e .[dev]
       - name: Codestyle with black and isort
         run: |
           black --config=pyproject.toml --check utilities
