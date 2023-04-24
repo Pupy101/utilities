@@ -89,7 +89,7 @@ def train_valid_test_split(
     data: pd.DataFrame,
     valid_size: float,
     test_size: float,
-    random_state: int,
+    random_state: int = 42,
     stratify_column: Optional[str] = None,
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     assert valid_size + test_size < 1, "Sum of valid/test sizes must be smaller 1"
