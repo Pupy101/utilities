@@ -42,6 +42,13 @@ class ResizeImage:
     size: int
     check: bool = True
 
+    def resize(self, width: int, height: int) -> Tuple[int, int]:
+        if width <= height:
+            resized_width, resized_height = self.size, round(self.size * height / width)
+        else:
+            resized_width, resized_height = round(self.size * width / height), self.size
+        return (resized_width, resized_height)
+
 
 def image_shape(path: Union[str, Path]) -> Optional[Tuple[int, int, int]]:
     path = Path(path)
@@ -62,12 +69,7 @@ def resize_image(item: ResizeImage) -> Tuple[Path, bool]:
             path.unlink()
         except Exception:  # pylint: disable=broad-exception-caught
             return path, False
-    if width <= height:
-        width, height = item.size, round(item.size * height / width)
-    else:
-        width, height = round(item.size * width / height), item.size
-    shape = (width, height)
-    resized_image = image.resize(shape, Image.LANCZOS)
+    resized_image = image.resize(item.resize(width=width, height=height), Image.LANCZOS)
     resized_image.save(path)
     return path, True
 
