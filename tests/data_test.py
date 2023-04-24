@@ -4,10 +4,10 @@ import pytest
 
 from utilities.data import ResizeImage, image_shape, resize_image
 
-IMAGES_DIRECTORY = Path(__file__).parent / "data"
+DATA_DIR = Path(__file__).parent / "data"
 
 
-@pytest.mark.parametrize("path", IMAGES_DIRECTORY.glob("*.jpeg"))
+@pytest.mark.parametrize("path", DATA_DIR.glob("*.jpeg"))
 def test_image_resize(path: Path) -> None:
     old_shape = image_shape(path)
     assert old_shape, "Can't open image"
