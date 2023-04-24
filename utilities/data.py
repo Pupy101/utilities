@@ -43,6 +43,14 @@ class ResizeImage:
     check: bool = True
 
 
+def image_shape(path: Union[str, Path]) -> Optional[Tuple[int, int, int]]:
+    path = Path(path)
+    if not path.exists():
+        return None
+    image = Image.open(path)
+    return image.width, image.height, len(image.mode)
+
+
 def resize_image(item: ResizeImage) -> Tuple[Path, bool]:
     path = Path(item.path)
     if not path.exists():
