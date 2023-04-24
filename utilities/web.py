@@ -22,7 +22,7 @@ def configure_ssl() -> None:
 def check_url(url: str) -> Tuple[str, bool]:
     try:
         response = httpx.head(url=url, timeout=5)
-    except httpx.TimeoutException:
+    except Exception:  # pylint: disable=broad-exception-caught
         return url, False
     return url, 200 <= response.status_code < 300
 
