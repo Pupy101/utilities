@@ -4,8 +4,9 @@ disable = [
     "missing-module-docstring",
     "missing-class-docstring",
     "missing-function-docstring",
+    "unspecified-encoding",
 ]
-good-names = "i"
+good-names = "i,fp"
 
 [tool.mypy]
 ignore_missing_imports = true
