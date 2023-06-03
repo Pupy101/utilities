@@ -15,4 +15,4 @@ def load_env(env_name: str, transform: Callable[[Any], Item], default: Item) -> 
 
 
 RETRIES_COUNT = load_env("PY_UTILITIES_RETRIES_COUNT", int, 3)
-SUPPRESS_RETRY = load_env("PY_UTILITIES_SUPPRESS_RETRY", int, 1)
+SUPPRESS_RETRY = bool(load_env("PY_UTILITIES_SUPPRESS_RETRY", int, 1))

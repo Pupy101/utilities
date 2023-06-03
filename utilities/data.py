@@ -65,10 +65,10 @@ def resize_image(item: ResizeImage) -> Tuple[Path, bool]:
         return path, False
     image = Image.open(path)
     width, height, channels = image.width, image.height, len(image.mode)
-    resized_image = image.resize(item.resize(width=width, height=height), Image.LANCZOS)
-    image_resized = True
     try:
+        resized_image = image.resize(item.resize(width=width, height=height), Image.LANCZOS)
         resized_image.save(path)
+        image_resized = True
     except OSError:
         image_resized = False
     if item.check and channels != 3 or not image_resized:
