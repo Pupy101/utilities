@@ -17,7 +17,7 @@ def run_th(
     func: Callable[[Input], Output],
     n_threads: int,
     tqdm_off: bool = False,
-    tqdm_leave: bool = False
+    tqdm_leave: Optional[bool] = None
 ) -> List[Output]:
     with ThreadPoolExecutor(max_workers=n_threads) as pool:
         return list(tqdm(pool.map(func, items), total=len(items), disable=tqdm_off, leave=tqdm_leave))
@@ -28,7 +28,7 @@ def run_mp(
     func: Callable[[Input], Output],
     n_pools: int,
     tqdm_off: bool = False,
-    tqdm_leave: bool = False
+    tqdm_leave: Optional[bool] = None
 ) -> List[Output]:
     with ProcessPoolExecutor(max_workers=n_pools) as pool:
         return list(tqdm(pool.map(func, items), total=len(items), disable=tqdm_off, leave=tqdm_leave))
@@ -41,7 +41,7 @@ def run_mp_th(  # pylint: disable=too-many-arguments
     chunk_size: int,
     n_threads: int,
     tqdm_off: bool = False,
-    tqdm_leave: bool = False
+    tqdm_leave: Optional[bool] = None
 ) -> List[Output]:
     func_th: Callable[[Input], List[Output]]
     func_th = partial(run_th, func=func, n_threads=n_threads, tqdm_off=True)  # type: ignore
