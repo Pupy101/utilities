@@ -5,7 +5,7 @@ from typing import Optional, Tuple, Union
 
 import httpx
 
-from utilities.config import RETRIES_COUNT
+from utilities.config import RETRIES_COUNT, SUPPRESS_RETRY
 from utilities.data import md5
 from utilities.execution import retry
 
@@ -34,7 +34,7 @@ class DownloadItem:
     ext: str
 
 
-@retry(count=RETRIES_COUNT, suppress=True)
+@retry(count=RETRIES_COUNT, suppress=SUPPRESS_RETRY)
 def download_file(item: DownloadItem) -> Tuple[str, Optional[Path]]:
     with httpx.stream("GET", item.url, verify=False, timeout=20) as response:
         if 200 > response.status_code >= 300:

@@ -10,19 +10,20 @@ from PIL import Image
 from sklearn.model_selection import train_test_split
 
 Item = TypeVar("Item")
+PathLike = Union[str, Path]
 
 
-def load_yaml(file: Union[str, Path]) -> Any:
+def load_yaml(file: PathLike) -> Any:
     with open(file, "r") as fp:
         return yaml.safe_load(fp)
 
 
-def load_json(file: Union[str, Path]) -> Any:
+def load_json(file: PathLike) -> Any:
     with open(file, "r") as fp:
         return json.load(fp)
 
 
-def load_jsonl(file: Union[str, Path]) -> List[Any]:
+def load_jsonl(file: PathLike) -> List[Any]:
     data: List[Any] = []
     with open(file, "r") as fp:
         for line in fp:
@@ -38,7 +39,7 @@ def md5(data: Union[str, bytes]) -> str:
 
 @dataclass
 class ResizeImage:
-    path: Union[str, Path]
+    path: PathLike
     size: int
     check: bool = True
 
@@ -50,7 +51,7 @@ class ResizeImage:
         return (resized_width, resized_height)
 
 
-def image_shape(path: Union[str, Path]) -> Optional[Tuple[int, int, int]]:
+def image_shape(path: PathLike) -> Optional[Tuple[int, int, int]]:
     path = Path(path)
     if not path.exists():
         return None
@@ -64,13 +65,17 @@ def resize_image(item: ResizeImage) -> Tuple[Path, bool]:
         return path, False
     image = Image.open(path)
     width, height, channels = image.width, image.height, len(image.mode)
-    if item.check and channels != 3:
+    resized_image = image.resize(item.resize(width=width, height=height), Image.LANCZOS)
+    image_resized = True
+    try:
+        resized_image.save(path)
+    except OSError:
+        image_resized = False
+    if item.check and channels != 3 or not image_resized:
         try:
             path.unlink()
         except Exception:  # pylint: disable=broad-exception-caught
             return path, False
-    resized_image = image.resize(item.resize(width=width, height=height), Image.LANCZOS)
-    resized_image.save(path)
     return path, True
 
 
