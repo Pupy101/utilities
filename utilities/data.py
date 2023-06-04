@@ -6,7 +6,8 @@ from typing import Any, Generator, Iterable, List, Optional, Tuple, TypeVar, Uni
 
 import pandas as pd
 import yaml
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
+from PIL.Image import Image as ImageCls
 from sklearn.model_selection import train_test_split
 
 Item = TypeVar("Item")
@@ -31,6 +32,13 @@ def load_jsonl(file: PathLike) -> List[Any]:
     return data
 
 
+def delete_file(file: PathLike) -> None:
+    try:
+        Path(file).unlink(missing_ok=True)
+    except Exception:  # pylint: disable=broad-exception-caught
+        pass
+
+
 def md5(data: Union[str, bytes]) -> str:
     if isinstance(data, str):
         data = data.encode()
@@ -43,7 +51,8 @@ class ResizeImage:
     size: int
     check: bool = True
 
-    def resize(self, width: int, height: int) -> Tuple[int, int]:
+    def resize(self, image: ImageCls) -> Tuple[int, int]:
+        width, height = image.width, image.height
         if width <= height:
             resized_width, resized_height = self.size, round(self.size * height / width)
         else:
@@ -51,31 +60,36 @@ class ResizeImage:
         return (resized_width, resized_height)
 
 
+def read_image(path: PathLike) -> Optional[ImageCls]:
+    try:
+        image = Image.open(path)
+    except (FileNotFoundError, ValueError, TypeError, UnidentifiedImageError, Image.DecompressionBombError):
+        image = None
+    return image
+
+
 def image_shape(path: PathLike) -> Optional[Tuple[int, int, int]]:
-    path = Path(path)
-    if not path.exists():
-        return None
-    image = Image.open(path)
-    return image.width, image.height, len(image.mode)
+    image = read_image(path=path)
+    if image is not None:
+        return image.width, image.height, len(image.mode)
+    return None
 
 
 def resize_image(item: ResizeImage) -> Tuple[Path, bool]:
     path = Path(item.path)
-    if not path.exists():
-        return path, False
-    image = Image.open(path)
-    width, height, channels = image.width, image.height, len(image.mode)
-    try:
-        resized_image = image.resize(item.resize(width=width, height=height), Image.LANCZOS)
-        resized_image.save(path)
-        image_resized = True
-    except OSError:
-        image_resized = False
-    if item.check and channels != 3 or not image_resized:
+    image = read_image(path=path)
+    if image is not None:
+        channels = len(image.mode)
         try:
-            path.unlink()
+            image.resize(item.resize(image=image), Image.LANCZOS).save(path)
+            force_delete = False
         except Exception:  # pylint: disable=broad-exception-caught
-            return path, False
+            force_delete = True
+    else:
+        force_delete = True
+    if force_delete or item.check and channels != 3:
+        delete_file(file=path)
+        return path, False
     return path, True
 
 
