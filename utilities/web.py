@@ -9,6 +9,8 @@ from utilities.config import RETRIES_COUNT
 from utilities.data import md5
 from utilities.execution import retry
 
+PathLike = Union[str, Path]
+
 
 def configure_ssl() -> None:
     try:
@@ -30,8 +32,9 @@ def check_url(url: str) -> Tuple[str, bool]:
 @dataclass
 class DownloadItem:
     url: str
-    dir: Union[str, Path]
+    dir: PathLike
     ext: str
+    chunk_size: int = 1024
 
 
 @retry(count=RETRIES_COUNT, suppress=True)
@@ -41,6 +44,6 @@ def download_file(item: DownloadItem) -> Tuple[str, Optional[Path]]:
             return item.url, None
         path = Path(item.dir) / f"{md5(item.url)}.{item.ext}"
         with open(path, "wb") as file:
-            for chunk in response.iter_bytes(chunk_size=1024):
+            for chunk in response.iter_bytes(chunk_size=item.chunk_size):
                 file.write(chunk)
     return item.url, path

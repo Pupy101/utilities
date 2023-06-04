@@ -14,4 +14,4 @@ def load_env(env_name: str, transform: Callable[[Any], Item], default: Item) -> 
         return default
 
 
-RETRIES_COUNT = load_env("PY_UTILITIES_RETRIES_COUNT", int, 5)
+RETRIES_COUNT = load_env("PY_UTILITIES_RETRIES_COUNT", int, 3)
