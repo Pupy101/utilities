@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from utilities.web import DownloadItem, download_file
+from utilities.http import download_file
+from utilities.types import DownloadItem
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -16,8 +17,8 @@ DATA_DIR = Path(__file__).parent / "data"
     ],
 )
 def test_image_resize(ext: str, status: bool, url: str) -> None:
-    item = DownloadItem(url=url, dir=DATA_DIR, ext=ext)
-    result = download_file(item)
+    item = DownloadItem(url=url, ext=ext)
+    result = download_file(item, directory=DATA_DIR)
     if status:
         assert result is not None, "Retries supress"
         return_url, path = result

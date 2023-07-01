@@ -25,7 +25,7 @@ def find_requirements() -> List[str]:
 
 setup(
     name="utilities",
-    version="0.1.1",
+    version="0.1.2",
     description="Library with python utilities",
     author="Sergei Porkhun",
     author_email="ser.porkhun41@gmail.com",
