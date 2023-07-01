@@ -1,2 +1,2 @@
-from .multi import *
+from .parallel import *
 from .retries import *
