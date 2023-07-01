@@ -88,4 +88,5 @@ __all__ = [
     "delete_file",
     "compute_md5_hash",
     "image_shape",
+    "resize_image",
 ]
