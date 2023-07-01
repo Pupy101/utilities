@@ -1,7 +1,8 @@
+dacite
 httpx
-numpy
 pandas
 Pillow
 PyYAML
 scikit-learn
+tenacity
 tqdm
