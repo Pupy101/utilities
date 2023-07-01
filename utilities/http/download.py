@@ -5,8 +5,8 @@ from typing import Optional, Tuple
 import httpx
 
 from utilities.config import CFG
+from utilities.exec import sync_retry_supress
 from utilities.types import DownloadItem, PathLike
-from utilities.utils import sync_retry_supress
 
 
 def __md5(url: str) -> str:
