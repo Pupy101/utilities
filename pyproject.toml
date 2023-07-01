@@ -5,6 +5,7 @@ disable = [
     "missing-class-docstring",
     "missing-function-docstring",
     "unspecified-encoding",
+    "no-member",
 ]
 good-names = "i,fp"
 
