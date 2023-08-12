@@ -5,6 +5,3 @@ from dataclasses import dataclass
 class DownloadItem:
     url: str
     ext: str
-
-
-__all__ = ["DownloadItem"]

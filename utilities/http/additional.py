@@ -8,6 +8,3 @@ def configure_ssl() -> None:
         pass
     else:
         ssl._create_default_https_context = unverified_https_context  # pylint: disable=protected-access
-
-
-__all__ = ["configure_ssl"]

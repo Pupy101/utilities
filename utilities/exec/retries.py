@@ -2,7 +2,7 @@ import logging
 from functools import wraps
 from typing import Callable, Coroutine, Optional, TypeVar
 
-from tenacity import retry, stop_after_attempt, wait_random_exponential
+from tenacity import retry, stop_after_attempt, wait_exponential
 from typing_extensions import ParamSpec
 
 from utilities.config import CFG
@@ -13,7 +13,7 @@ Output = TypeVar("Output")
 
 
 default_retry = retry(
-    wait=wait_random_exponential(min=CFG.request.retry_min_wait, max=CFG.request.retry_min_wait),
+    wait=wait_exponential(min=CFG.request.retry_min_wait, max=CFG.request.retry_min_wait),
     stop=stop_after_attempt(CFG.request.retries_count),
     reraise=True,
 )
@@ -55,6 +55,3 @@ def async_retry_supress(
             return None
 
     return inner
-
-
-__all__ = ["default_retry", "sync_retry_supress", "async_retry_supress"]
