@@ -15,6 +15,6 @@ def test_image_resize(path: Path) -> None:
     item = ResizeImage(path=path, size=300)
     resize_image(item)
     new_image = load_image(path)
-    assert new_image, "Can't open resized image"
+    assert new_image is not None, "Can't open resized image"
     new_height, new_width, _ = new_image
     assert new_width, new_height == item.resize(image=image)
