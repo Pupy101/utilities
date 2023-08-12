@@ -1,8 +1,7 @@
 dacite
 httpx
-pandas
-Pillow
+numpy
+opencv-python
 PyYAML
-scikit-learn
 tenacity
 tqdm
