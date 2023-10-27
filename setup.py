@@ -4,7 +4,7 @@ from typing import List
 
 from setuptools import find_packages, setup
 
-EXCLUDED_PACKAGES = ["*tests*"]
+EXCLUDED_PACKAGES = ["tests"]
 
 
 def dev_requirements() -> List[str]:

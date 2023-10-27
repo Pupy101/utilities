@@ -28,7 +28,7 @@ class Config:
         path = Path(path)
         if not path.exists():
             return cls()
-        with open(path, "r") as fp:
+        with open(path, mode="r") as fp:
             data = yaml.safe_load(fp)
         return from_dict(data_class=cls, data=data)
 

@@ -2,8 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from utilities.http import download_file
-from utilities.types import DownloadItem
+from utilities.core import download_file
 
 DATA_DIR = Path(__file__).parent / "data"
 

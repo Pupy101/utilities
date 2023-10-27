@@ -1,5 +1,5 @@
 dacite
-httpx
+httpx[http2]
 numpy
 opencv-python
 PyYAML

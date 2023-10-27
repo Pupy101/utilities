@@ -1,11 +1,12 @@
 import asyncio
+import logging
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from typing import Any, Callable, Coroutine, Iterable, List, Optional, TypeVar
 
 from tqdm.auto import tqdm
-from typing_extensions import ParamSpec
 
-Args = ParamSpec("Args")
+logger = logging.getLogger(__file__)
+
 Input = TypeVar("Input")
 Output = TypeVar("Output")
 
