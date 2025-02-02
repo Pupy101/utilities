@@ -1,7 +1,0 @@
-dacite
-httpx[http2]
-numpy
-opencv-python
-PyYAML
-tenacity
-tqdm

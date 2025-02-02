@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from utilities.core import download_file
+from utilities.request import download_file
 from utilities.types import PathLike
 
 
@@ -20,7 +20,7 @@ def test_image_resize(status: bool, url: str, temp_dir: PathLike) -> None:
     result = download_file(url, path=path)
     if status:
         assert result is not None, "Retries supress"
-        return_url, path = result
+        return_url = result
         assert return_url == url
         assert path is not None, "File doesn't download"
         assert path.exists(), "Not finded file"
