@@ -1,13 +1,17 @@
 import ssl
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
 
-import httpx
+from .config import CFG
+from .contants import STR_ERROR_REQUEST_IMPORT
+from .types import Number, PathLike
 
-from utilities.config import CFG
-from utilities.types import PathLike
+try:
+    import httpx
 
-from .utils import sync_retry_supress
+    from .retries import sync_retry_supress
+except ImportError as exc:
+    raise ImportError(STR_ERROR_REQUEST_IMPORT) from exc
 
 
 def configure_ssl() -> None:
@@ -19,7 +23,7 @@ def configure_ssl() -> None:
         ssl._create_default_https_context = unverified_https_context  # pylint: disable=protected-access
 
 
-def check_url(url: str, verify: bool = False, timeout: int = CFG.request.timeout) -> bool:
+def check_url(url: str, verify: bool = False, timeout: Number = CFG.request.timeout) -> bool:
     try:
         response = httpx.head(url=url, verify=verify, timeout=timeout)
     except Exception:  # pylint: disable=broad-exception-caught
@@ -28,12 +32,12 @@ def check_url(url: str, verify: bool = False, timeout: int = CFG.request.timeout
 
 
 @sync_retry_supress
-def download_file(url: str, path: PathLike, chunk_size: int = 1024) -> Tuple[str, Optional[Path]]:
+def download_file(url: str, path: PathLike, chunk_size: int = 1024 * 1024) -> Optional[Path]:
     path = Path(path)
     with httpx.stream(method="GET", url=url, verify=False, timeout=CFG.request.timeout) as response:
         if 200 > response.status_code or response.status_code >= 300:
-            return url, None
+            return None
         with open(path, "wb") as file:
             for chunk in response.iter_bytes(chunk_size=chunk_size):
                 file.write(chunk)
-    return url, path
+    return path
