@@ -20,9 +20,7 @@ def test_image_resize(status: bool, url: str, temp_dir: PathLike) -> None:
     result = download_file(url, path=path)
     if status:
         assert result is not None, "Retries supress"
-        return_url = result
-        assert return_url == url
-        assert path is not None, "File doesn't download"
-        assert path.exists(), "Not finded file"
+        assert result.exists(), f"Not found file: {result.absolute()}"
+        assert path.exists(), f"Not found file: {path.absolute()}"
     else:
         assert result is None
