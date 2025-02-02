@@ -21,8 +21,9 @@ def load_image(path: PathLike) -> np.ndarray:
     return cv2.cvtColor(cv2.imread(str(path)), cv2.COLOR_BGR2RGB)
 
 
-def resize_image(path: PathLike, size: int) -> Optional[Path]:
-    path = Path(path)
+def resize_image(path: PathLike, size: int, output: Optional[PathLike] = None) -> Optional[Path]:
+    path = Path(path).absolute()
+    output = Path(output or path).absolute()
     image = load_image(path=path)
     if image is None:
         return None
@@ -32,5 +33,5 @@ def resize_image(path: PathLike, size: int) -> Optional[Path]:
     else:
         new_width, new_height = round(size * width / height), size
     resized_image = cv2.resize(image, (new_width, new_height))
-    cv2.imwrite(str(path), cv2.cvtColor(resized_image, cv2.COLOR_RGB2BGR))
-    return path
+    cv2.imwrite(str(output), cv2.cvtColor(resized_image, cv2.COLOR_RGB2BGR))
+    return output
